@@ -1,7 +1,6 @@
 
 
-prog = ('''
---LCD: System that displays a text on the liquid crystal display of the DE2 development board
+prog = ('''--LCD: System that displays a text on the liquid crystal display of the DE2 development board
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
@@ -69,7 +68,7 @@ txt = input('Text to display on the screen: ')
 over = 0
 for pos in range(len(txt)):
   stat = pos
-  if pos == 2:
+  if pos == 15:
     stat += 2
     prog = prog + f"\n  when {23+stat}=>RS<='1'; RW<='0'; EN<='0'; DATA<=192; edo_sig<={24+stat}; --Line Break\n"
     prog = prog + f"  when {24+stat}=>RS<='1'; RW<='0'; EN<='1'; DATA<=192; edo_sig<={25+stat};\n"
@@ -98,3 +97,6 @@ process(clk)
 end architecture;''')
 
 print(prog)
+
+with open('arq.vhdl', 'w') as out:
+  out.write(prog)
