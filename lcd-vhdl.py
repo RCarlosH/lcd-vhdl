@@ -1,6 +1,6 @@
 
 
-header = ('''
+prog = ('''
 --LCD: System that displays a text on the liquid crystal display of the DE2 development board
 library ieee;
 use ieee.std_logic_1164.all;
@@ -64,4 +64,37 @@ signal edo_act,edo_sig: integer range 0 to 102;
   when 20=>RS<='0'; RW<='0'; EN<='0'; DATA<=6;   edo_sig<=21;
   ''')
 
-print(header)
+txt = input('Text to display on the screen: ')
+
+over = 0
+for pos in range(len(txt)):
+  stat = pos
+  if pos == 2:
+    stat += 2
+    prog = prog + f"\n  when {23+stat}=>RS<='1'; RW<='0'; EN<='0' DATA<=192; edo_sig<={24+stat}; --Line Break\n"
+    prog = prog + f"  when {24+stat}=>RS<='1'; RW<='0'; EN<='1' DATA<=192; edo_sig<={25+stat};\n"
+    prog = prog + f"  when {25+stat}=>RS<='1'; RW<='0'; EN<='0' DATA<=192; edo_sig<={26+stat};\n"
+    
+    over += 3
+
+  stat += over
+
+  prog = prog + f"\n  when {21+stat}=>RS<='1'; RW<='0'; EN<='0' DATA<={ord(txt[pos])}; edo_sig<={22+stat}; --{txt[pos]}\n"
+  prog = prog + f"  when {22+stat}=>RS<='1'; RW<='0'; EN<='1' DATA<={ord(txt[pos])}; edo_sig<={23+stat};\n"
+  prog = prog + f"  when {23+stat}=>RS<='1'; RW<='0'; EN<='0' DATA<={ord(txt[pos])}; edo_sig<={24+stat};\n"
+  
+  over = 2
+
+prog += ('''
+  when 102=>RS<='0';RW<='0';EN<='0';DATA<=0;edo_sig <= 0;--Anchor				
+  when others =>RS<='0';RW<='0';EN<='0';DATA<=0;edo_sig<=0;--others
+ end case;
+ end process;
+
+process(clk)
+  begin
+   if (rising_edge(clk)) then edo_act <= edo_sig; end if;
+ end process;
+end architecture;''')
+
+print(prog)
