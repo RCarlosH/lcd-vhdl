@@ -67,25 +67,23 @@ txt = input('Text to display on the screen: ')
 
 over = 0
 pos_last = int()
+stat = 0
 for pos in range(len(txt)):
-  stat = pos
+  over = 3
   if pos == 15:
-    stat += 2
-    prog = prog + f"\n  when {23+stat}=>RS<='1'; RW<='0'; EN<='0'; DATA<=192; edo_sig<={24+stat}; --Line Break\n"
-    prog = prog + f"  when {24+stat}=>RS<='1'; RW<='0'; EN<='1'; DATA<=192; edo_sig<={25+stat};\n"
-    prog = prog + f"  when {25+stat}=>RS<='1'; RW<='0'; EN<='0'; DATA<=192; edo_sig<={26+stat};\n"
+    prog = prog + f"\n  when {21+stat}=>RS<='1'; RW<='0'; EN<='0'; DATA<=192; edo_sig<={22+stat}; --Line Break\n"
+    prog = prog + f"  when {22+stat}=>RS<='1'; RW<='0'; EN<='1'; DATA<=192; edo_sig<={23+stat};\n"
+    prog = prog + f"  when {23+stat}=>RS<='1'; RW<='0'; EN<='0'; DATA<=192; edo_sig<={24+stat};\n"
     
-    over += 3
-
-  stat += over
+    stat += 3
 
   prog = prog + f"\n  when {21+stat}=>RS<='1'; RW<='0'; EN<='0'; DATA<={ord(txt[pos])}; edo_sig<={22+stat}; --{txt[pos]}\n"
   prog = prog + f"  when {22+stat}=>RS<='1'; RW<='0'; EN<='1'; DATA<={ord(txt[pos])}; edo_sig<={23+stat};\n"
   prog = prog + f"  when {23+stat}=>RS<='1'; RW<='0'; EN<='0'; DATA<={ord(txt[pos])}; edo_sig<={24+stat};\n"
   
-  over = 2
-
   pos_last = stat
+  
+  stat += over
 
 prog += (f'''
   when {pos_last+24}=>RS<='0';RW<='0';EN<='0';DATA<=0;edo_sig <= 0;--Anchor				
