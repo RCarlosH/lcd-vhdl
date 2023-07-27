@@ -66,6 +66,7 @@ signal edo_act,edo_sig: integer range 0 to 102;
 txt = input('Text to display on the screen: ')
 
 over = 0
+pos_last = int()
 for pos in range(len(txt)):
   stat = pos
   if pos == 15:
@@ -84,8 +85,10 @@ for pos in range(len(txt)):
   
   over = 2
 
-prog += ('''
-  when 102=>RS<='0';RW<='0';EN<='0';DATA<=0;edo_sig <= 0;--Anchor				
+  pos_last = stat
+
+prog += (f'''
+  when {pos_last+24}=>RS<='0';RW<='0';EN<='0';DATA<=0;edo_sig <= 0;--Anchor				
   when others =>RS<='0';RW<='0';EN<='0';DATA<=0;edo_sig<=0;--others
  end case;
  end process;
