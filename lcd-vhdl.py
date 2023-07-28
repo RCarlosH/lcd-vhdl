@@ -1,6 +1,6 @@
+txt = input('Text to display on the screen: ')
 
-
-prog = ('''--LCD: System that displays a text on the liquid crystal display of the DE2 development board
+prog = (f'''--LCD: System that displays a text on the liquid crystal display of the DE2 development board
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
@@ -15,7 +15,7 @@ end entity;
 architecture arq of LCD is
 signal c:integer range 0 to 50000000;
 signal clk: std_logic;
-signal edo_act,edo_sig: integer range 0 to 102;
+signal edo_act,edo_sig: integer range 0 to {24 + 3 * len(txt)};
  begin
  LCD_ON<='1'; 
  LCD_BLON<='0';--check, could be a '1'
@@ -63,21 +63,21 @@ signal edo_act,edo_sig: integer range 0 to 102;
   when 20=>RS<='0'; RW<='0'; EN<='0'; DATA<=6;   edo_sig<=21;
   ''')
 
-txt = input('Text to display on the screen: ')
-
 over = 0
 pos_last = int()
 stat = 0
 for pos in range(len(txt)):
   over = 3
-  if pos == 15:
-    prog = prog + f"\n  when {21+stat}=>RS<='1'; RW<='0'; EN<='0'; DATA<=192; edo_sig<={22+stat}; --Line Break\n"
-    prog = prog + f"  when {22+stat}=>RS<='1'; RW<='0'; EN<='1'; DATA<=192; edo_sig<={23+stat};\n"
-    prog = prog + f"  when {23+stat}=>RS<='1'; RW<='0'; EN<='0'; DATA<=192; edo_sig<={24+stat};\n"
+  if pos == 16:
+    prog = prog + "\n"
+    prog = prog + f"  when {21+stat}=>RS<='0'; RW<='0'; EN<='0'; DATA<=192; edo_sig<={22+stat}; --Line Break\n"
+    prog = prog + f"  when {22+stat}=>RS<='0'; RW<='0'; EN<='1'; DATA<=192; edo_sig<={23+stat};\n"
+    prog = prog + f"  when {23+stat}=>RS<='0'; RW<='0'; EN<='0'; DATA<=192; edo_sig<={24+stat};\n"
     
     stat += 3
 
-  prog = prog + f"\n  when {21+stat}=>RS<='1'; RW<='0'; EN<='0'; DATA<={ord(txt[pos])}; edo_sig<={22+stat}; --{txt[pos]}\n"
+  prog = prog + "\n"
+  prog = prog + f"  when {21+stat}=>RS<='1'; RW<='0'; EN<='0'; DATA<={ord(txt[pos])}; edo_sig<={22+stat}; --{txt[pos]}\n"
   prog = prog + f"  when {22+stat}=>RS<='1'; RW<='0'; EN<='1'; DATA<={ord(txt[pos])}; edo_sig<={23+stat};\n"
   prog = prog + f"  when {23+stat}=>RS<='1'; RW<='0'; EN<='0'; DATA<={ord(txt[pos])}; edo_sig<={24+stat};\n"
   
